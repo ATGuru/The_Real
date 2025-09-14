@@ -1,0 +1,75 @@
+#!/bin/bash
+set -e
+
+# Go to project root
+cd "$(dirname "$0")"
+
+echo ">>> Cleaning old Gradle builds..."
+cd android
+./gradlew clean || true
+cd ..
+
+echo ">>> Removing old dependencies..."
+rm -rf node_modules
+rm -f package-lock.json yarn.lock
+
+echo ">>> Reinstalling dependencies..."
+npm install
+
+echo ">>> Fixing reanimated version..."
+npm install react-native-reanimated@3.10.0 --save
+
+echo ">>> Making sure other core dependencies are installed..."
+npm install @react-navigation/native @react-navigation/stack @react-navigation/drawer react-native-gesture-handler react-native-screens react-native-safe-area-context react-native-device-info --save
+
+echo ">>> Syncing pods (iOS only, skip if not needed)..."
+if [ -d "ios" ]; then
+  cd ios
+  pod install --repo-update || true
+  cd ..
+fi
+
+echo ">>> Building Android debug APK..."
+cd android
+./gradlew assembleDebug
+cd ..
+
+echo ">>> If successful, APK is here:"
+echo "android/app/build/outputs/apk/debug/app-debug.apk"
+
+cat > snippets.txt <<'EOF'
+# ===============================
+# 🔧 Project Fix & Rebuild Snippets
+# ===============================
+
+# 1. Clean Gradle + reinstall everything
+cd android && ./gradlew clean && cd ..
+rm -rf node_modules package-lock.json yarn.lock
+npm install
+
+# 2. Fix Reanimated version (React Native 0.74 needs v3.x, not v2 or v4)
+npm install react-native-reanimated@3.10.0 --save
+
+# 3. Rebuild APK (debug)
+cd android && ./gradlew assembleDebug && cd ..
+
+# 4. Run app on phone (via Metro)
+npm run android
+
+# 5. Install built APK directly (via adb)
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+
+# 6. Start Metro (JS bundler)
+npm start
+
+# 7. One-liner full clean + rebuild
+rm -rf node_modules package-lock.json yarn.lock android/.gradle && \
+npm install && \
+npm install react-native-reanimated@3.10.0 --save && \
+cd android && ./gradlew clean assembleDebug && cd ..
+
+# 8. Start quick HTTP server to share APK
+cd android/app/build/outputs/apk/debug/
+python3 -m http.server 8000
+# Then open http://<phone-ip>:8000 on your computer
+EOF
