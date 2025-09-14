@@ -1,4 +1,4 @@
-#!/bin/bash
+ well fuck this than#!/bin/bash
 # === Quick APK Builder for Termux ===
 
 # Stop Gradle if it's stuck
