@@ -1,5 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Alert, FlatList } from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  FlatList,
+} from 'react-native';
 import { Colors } from '../theme/colors';
 import { getAllMemories, getMemory, saveMemory } from '../memory';
 import HeaderBar from '../components/HeaderBar';
@@ -28,14 +36,16 @@ export default function ActiveAssistantScreen() {
         const selected = await getMemory<string>('assistant:selected');
         setActiveId(selected);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.log('Load assistants error', e);
         Alert.alert('Error', 'Failed to load assistants.');
       }
     })();
   }, []);
 
-  const active = useMemo(() => assistants.find((a) => a.id === activeId) || null, [assistants, activeId]);
+  const active = useMemo(
+    () => assistants.find((a) => a.id === activeId) || null,
+    [assistants, activeId],
+  );
 
   const setActive = async (id: string) => {
     try {
@@ -44,7 +54,6 @@ export default function ActiveAssistantScreen() {
       const chosen = assistants.find((a) => a.id === id);
       Alert.alert('Active Assistant', `${chosen?.name || 'Assistant'} is now active.`);
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.log('Set active error', e);
       Alert.alert('Error', 'Failed to set active assistant.');
     }
@@ -59,9 +68,17 @@ export default function ActiveAssistantScreen() {
         <View style={styles.card}>
           <Text style={styles.name}>{active.name}</Text>
           <Text style={styles.meta}>{active.role}</Text>
-          {!!active.personality && <Text style={styles.body}>Personality: {active.personality}</Text>}
-          {!!active.instructions && <Text style={styles.body}>Instructions: {active.instructions}</Text>}
-          <TouchableOpacity style={styles.setBtn} onPress={() => setActive(active.id)} accessibilityLabel="Set as Active Assistant">
+          {!!active.personality && (
+            <Text style={styles.body}>Personality: {active.personality}</Text>
+          )}
+          {!!active.instructions && (
+            <Text style={styles.body}>Instructions: {active.instructions}</Text>
+          )}
+          <TouchableOpacity
+            style={styles.setBtn}
+            onPress={() => setActive(active.id)}
+            accessibilityLabel="Set as Active Assistant"
+          >
             <Text style={styles.setText}>Set as Active</Text>
           </TouchableOpacity>
         </View>
@@ -71,7 +88,7 @@ export default function ActiveAssistantScreen() {
         </View>
       )}
 
-      <Text style={[styles.section, { marginTop: 16 }]}>All Assistants</Text>
+      <Text style={[styles.section, styles.marginTop16]}>All Assistants</Text>
       {assistants.length === 0 && (
         <View style={styles.card}>
           <Text style={styles.meta}>No assistants yet. Create one in Agent Creator.</Text>
@@ -80,10 +97,10 @@ export default function ActiveAssistantScreen() {
       <FlatList
         data={assistants}
         keyExtractor={(a) => a.id}
-        contentContainerStyle={{ paddingHorizontal: 12 }}
+        contentContainerStyle={styles.paddingHorizontal12}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <View style={{ flex: 1 }}>
+            <View style={styles.flex1}>
               <Text style={styles.name}>{item.name || 'Untitled'}</Text>
               <Text style={styles.meta}>{item.role || 'No role specified'}</Text>
             </View>
@@ -103,13 +120,32 @@ export default function ActiveAssistantScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  title: { color: Colors.primary, fontSize: 22, fontWeight: '800', textAlign: 'center', marginVertical: 12 },
+  title: {
+    color: Colors.primary,
+    fontSize: 22,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginVertical: 12,
+  },
   section: { color: Colors.textPrimary, fontWeight: '800', marginHorizontal: 12 },
-  card: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.divider, borderRadius: 14, padding: 16, marginHorizontal: 12 },
+  card: {
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.divider,
+    borderRadius: 14,
+    padding: 16,
+    marginHorizontal: 12,
+  },
   name: { color: Colors.textPrimary, fontWeight: '800' },
   meta: { color: Colors.placeholder, marginTop: 4 },
   body: { color: Colors.textPrimary, marginTop: 8 },
-  setBtn: { marginTop: 12, backgroundColor: Colors.primary, borderRadius: 12, paddingVertical: 10, alignItems: 'center' },
+  setBtn: {
+    marginTop: 12,
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
   setText: { color: Colors.background, fontWeight: '800' },
   row: {
     backgroundColor: Colors.surface,
@@ -126,4 +162,7 @@ const styles = StyleSheet.create({
   pillSet: { borderColor: Colors.secondary },
   pillActive: { borderColor: Colors.primary },
   pillText: { color: Colors.textPrimary, fontWeight: '700' },
+  marginTop16: { marginTop: 16 },
+  paddingHorizontal12: { paddingHorizontal: 12 },
+  flex1: { flex: 1 },
 });

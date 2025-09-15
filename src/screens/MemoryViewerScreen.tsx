@@ -50,7 +50,6 @@ export default function MemoryViewerScreen() {
       });
       setConversations(previews);
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.log('Load memory error', e);
       Alert.alert('Error', 'Failed to load memory.');
     }
@@ -74,7 +73,7 @@ export default function MemoryViewerScreen() {
             assistants.map((a) => (
               <View key={a.id} style={styles.row}>
                 {editingId === a.id ? (
-                  <View style={{ flex: 1 }}>
+                  <View style={styles.flex1}>
                     <TextInput
                       style={styles.input}
                       value={editName}
@@ -83,7 +82,7 @@ export default function MemoryViewerScreen() {
                       placeholderTextColor={Colors.placeholder}
                     />
                     <TextInput
-                      style={[styles.input, { marginTop: 6 }]}
+                      style={styles.inputMargin}
                       value={editRole}
                       onChangeText={setEditRole}
                       placeholder="Role"
@@ -91,7 +90,7 @@ export default function MemoryViewerScreen() {
                     />
                   </View>
                 ) : (
-                  <View style={{ flex: 1 }}>
+                  <View style={styles.flex1}>
                     <Text style={styles.name}>{a.name || 'Untitled'}</Text>
                     <Text style={styles.meta}>{a.role || 'No role specified'}</Text>
                   </View>
@@ -157,7 +156,7 @@ export default function MemoryViewerScreen() {
           ) : (
             conversations.map((c) => (
               <View key={c.assistantName} style={styles.row}>
-                <View style={{ flex: 1 }}>
+                <View style={styles.flex1}>
                   <Text style={styles.name}>{c.assistantName}</Text>
                   {c.preview.map((line, idx) => (
                     <Text key={idx} style={styles.meta} numberOfLines={1}>
@@ -178,7 +177,9 @@ export default function MemoryViewerScreen() {
                     style={[styles.pill, styles.delete]}
                     onPress={async () => {
                       await deleteMemory(`conversation:${c.assistantName}`);
-                      setConversations((prev) => prev.filter((x) => x.assistantName !== c.assistantName));
+                      setConversations((prev) =>
+                        prev.filter((x) => x.assistantName !== c.assistantName),
+                      );
                       Alert.alert('Deleted', `Conversation for ${c.assistantName} removed.`);
                     }}
                     accessibilityRole="button"
@@ -197,17 +198,56 @@ export default function MemoryViewerScreen() {
 }
 
 const styles = StyleSheet.create({
+  input: {
+    color: Colors.textPrimary,
+    borderRadius: 8,
+    padding: 8,
+    backgroundColor: Colors.surface,
+  },
+  flex1: { flex: 1 },
+  inputMargin: {
+    marginTop: 6,
+    color: Colors.textPrimary,
+    borderRadius: 8,
+    padding: 8,
+    backgroundColor: Colors.surface,
+  },
   container: { flex: 1, backgroundColor: Colors.background },
   content: { padding: 16, paddingBottom: 24 },
-  title: { color: Colors.primary, fontSize: 24, fontWeight: '800', marginBottom: 12, textAlign: 'center' },
-  section: { backgroundColor: Colors.surface, borderRadius: 14, borderWidth: 1, borderColor: Colors.divider, padding: 12, marginBottom: 16 },
+  title: {
+    color: Colors.primary,
+    fontSize: 24,
+    fontWeight: '800',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  section: {
+    backgroundColor: Colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.divider,
+    padding: 12,
+    marginBottom: 16,
+  },
   sectionTitle: { color: Colors.textPrimary, fontSize: 16, fontWeight: '700', marginBottom: 8 },
   placeholder: { color: Colors.placeholder },
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.divider },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider,
+  },
   name: { color: Colors.textPrimary, fontWeight: '700' },
   meta: { color: Colors.placeholder, marginTop: 2 },
   actions: { flexDirection: 'row', alignItems: 'center' },
-  pill: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, marginLeft: 8, borderWidth: 1 },
+  pill: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginLeft: 8,
+    borderWidth: 1,
+  },
   load: { borderColor: Colors.secondary },
   delete: { borderColor: Colors.primary },
   pillText: { color: Colors.textPrimary, fontWeight: '700' },

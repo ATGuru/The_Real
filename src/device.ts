@@ -7,7 +7,7 @@ export type DeviceProfile = {
 };
 
 function toGB(bytes: number): number {
-  const gb = bytes / (1024 ** 3);
+  const gb = bytes / 1024 ** 3;
   return Math.round(gb * 100) / 100; // 2 decimals
 }
 

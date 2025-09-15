@@ -44,10 +44,16 @@ export default function ModelDetailScreen({ route }: Props) {
 type Badge = 'compatible' | 'not-recommended' | 'incompatible' | 'oversize-storage';
 
 function assess(model: ModelItem, device: DeviceProfile): Badge {
-  if (model.sizeGB > device.freeStorageGB) return 'oversize-storage';
+  if (model.sizeGB > device.freeStorageGB) {
+    return 'oversize-storage';
+  }
   const archOk = model.supportedAbis.some((a) => device.supportedAbis.includes(a));
-  if (!archOk) return 'incompatible';
-  if (device.totalRamGB > 0 && model.sizeGB > device.totalRamGB * 0.7) return 'not-recommended';
+  if (!archOk) {
+    return 'incompatible';
+  }
+  if (device.totalRamGB > 0 && model.sizeGB > device.totalRamGB * 0.7) {
+    return 'not-recommended';
+  }
   return 'compatible';
 }
 
@@ -79,9 +85,27 @@ function badgeColor(s: Badge) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background, padding: 16 },
-  title: { color: Colors.primary, fontSize: 22, fontWeight: '800', textAlign: 'center', marginBottom: 12 },
-  card: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.divider, borderRadius: 14, padding: 16 },
+  title: {
+    color: Colors.primary,
+    fontSize: 22,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  card: {
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.divider,
+    borderRadius: 14,
+    padding: 16,
+  },
   row: { color: Colors.textPrimary, marginBottom: 8 },
-  badge: { alignSelf: 'flex-start', marginTop: 8, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  badge: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
   badgeText: { color: Colors.textPrimary, fontWeight: '800' },
 });

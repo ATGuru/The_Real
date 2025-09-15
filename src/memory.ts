@@ -7,7 +7,9 @@ export async function saveMemory(key: string, value: unknown): Promise<void> {
 
 export async function getMemory<T = unknown>(key: string): Promise<T | null> {
   const raw = await AsyncStorage.getItem(key);
-  if (raw == null) return null;
+  if (raw == null) {
+    return null;
+  }
   try {
     return JSON.parse(raw) as T;
   } catch {
@@ -18,10 +20,14 @@ export async function getMemory<T = unknown>(key: string): Promise<T | null> {
 
 export async function getAllMemories(): Promise<Array<{ key: string; value: unknown }>> {
   const keys = await AsyncStorage.getAllKeys();
-  if (!keys || keys.length === 0) return [];
+  if (!keys || keys.length === 0) {
+    return [];
+  }
   const entries = await AsyncStorage.multiGet(keys);
   return entries.map(([key, raw]) => {
-    if (raw == null) return { key, value: null };
+    if (raw == null) {
+      return { key, value: null };
+    }
     try {
       return { key, value: JSON.parse(raw) };
     } catch {
@@ -34,13 +40,19 @@ export async function deleteMemory(key: string): Promise<void> {
   await AsyncStorage.removeItem(key);
 }
 
-export async function getMemoriesByPrefix(prefix: string): Promise<Array<{ key: string; value: unknown }>> {
+export async function getMemoriesByPrefix(
+  prefix: string,
+): Promise<Array<{ key: string; value: unknown }>> {
   const keys = await AsyncStorage.getAllKeys();
   const filtered = keys.filter((k) => k.startsWith(prefix));
-  if (filtered.length === 0) return [];
+  if (filtered.length === 0) {
+    return [];
+  }
   const entries = await AsyncStorage.multiGet(filtered);
   return entries.map(([key, raw]) => {
-    if (raw == null) return { key, value: null };
+    if (raw == null) {
+      return { key, value: null };
+    }
     try {
       return { key, value: JSON.parse(raw) };
     } catch {
@@ -63,7 +75,9 @@ function convoKey(name: string) {
 
 export async function getConversation(assistantName: string): Promise<ConversationMessage[]> {
   const raw = await AsyncStorage.getItem(convoKey(assistantName));
-  if (!raw) return [];
+  if (!raw) {
+    return [];
+  }
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as ConversationMessage[]) : [];
@@ -82,7 +96,9 @@ const SETTINGS_KEY = 'memory:settings';
 
 export async function getMemorySettings(): Promise<MemorySettings> {
   const raw = await AsyncStorage.getItem(SETTINGS_KEY);
-  if (!raw) return { clearOnExit: false, keepLastConversations: 0 };
+  if (!raw) {
+    return { clearOnExit: false, keepLastConversations: 0 };
+  }
   try {
     const parsed = JSON.parse(raw) as Partial<MemorySettings>;
     return {
@@ -98,7 +114,10 @@ export async function saveMemorySettings(settings: MemorySettings): Promise<void
   await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
-export async function saveConversation(assistantName: string, message: ConversationMessage): Promise<void> {
+export async function saveConversation(
+  assistantName: string,
+  message: ConversationMessage,
+): Promise<void> {
   const history = await getConversation(assistantName);
   history.push(message);
   const settings = await getMemorySettings();
@@ -110,7 +129,9 @@ export async function saveConversation(assistantName: string, message: Conversat
   await AsyncStorage.setItem(convoKey(assistantName), JSON.stringify(next));
 }
 
-export async function getAllConversations(): Promise<Array<{ assistantName: string; messages: ConversationMessage[] }>> {
+export async function getAllConversations(): Promise<
+  Array<{ assistantName: string; messages: ConversationMessage[] }>
+> {
   const entries = await getMemoriesByPrefix('conversation:');
   return entries.map(({ key, value }) => ({
     assistantName: key.replace(/^conversation:/, ''),
@@ -120,7 +141,9 @@ export async function getAllConversations(): Promise<Array<{ assistantName: stri
 
 export async function clearAllConversations(): Promise<void> {
   const convos = await getMemoriesByPrefix('conversation:');
-  if (convos.length === 0) return;
+  if (convos.length === 0) {
+    return;
+  }
   await AsyncStorage.multiRemove(convos.map((c) => c.key));
 }
 
@@ -145,17 +168,30 @@ export async function applyExitSettings(): Promise<void> {
 // App-wide settings and helpers
 export type AppSettings = {
   theme: 'dark' | 'light' | 'system';
-  apiFallbackKey?: string;
+  apiFallbackKey?: string; // repurpose as HF token if desired
+  modelPath?: string; // file path to local GGUF model
+  miniDexBaseUrl?: string; // e.g., http://localhost:3000
+  miniDexToken?: string; // Bearer token for MiniDex auth
+  preferMiniDex?: boolean; // prefer MiniDex HTTP backend over native bridge
 };
 
 const APP_SETTINGS_KEY = 'app:settings';
 
 export async function getAppSettings(): Promise<AppSettings> {
   const raw = await AsyncStorage.getItem(APP_SETTINGS_KEY);
-  if (!raw) return { theme: 'dark' };
+  if (!raw) {
+    return { theme: 'dark' };
+  }
   try {
     const s = JSON.parse(raw) as Partial<AppSettings>;
-    return { theme: (s.theme as any) || 'dark', apiFallbackKey: s.apiFallbackKey };
+    return {
+      theme: (s.theme as any) || 'dark',
+      apiFallbackKey: s.apiFallbackKey,
+      modelPath: s.modelPath,
+      miniDexBaseUrl: s.miniDexBaseUrl,
+      miniDexToken: s.miniDexToken,
+      preferMiniDex: !!s.preferMiniDex,
+    };
   } catch {
     return { theme: 'dark' };
   }
@@ -176,7 +212,9 @@ export type Assistant = {
 
 export async function getActiveAssistant(): Promise<Assistant | null> {
   const id = await getMemory<string>('assistant:selected');
-  if (!id) return null;
+  if (!id) {
+    return null;
+  }
   const all = await getMemoriesByPrefix('assistant:');
   const found = all.map((e) => e.value as Assistant).find((a) => a && a.id === id) || null;
   return found;

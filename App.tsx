@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+} from '@react-navigation/drawer';
 import HomeScreen from './src/screens/HomeScreen';
 import ChatbotScreen from './src/screens/ChatbotScreen';
 import MatrixRainScreen from './src/screens/MatrixRainScreen';
@@ -25,7 +29,10 @@ export type RootStackParamList = {
   AgentCreator: undefined;
   MemoryViewer: undefined;
   ModelBrowser: undefined;
-  ModelDetail: { model: { id: string; name: string; sizeGB: number; supportedAbis: string[] }; device: { totalRamGB: number; freeStorageGB: number; supportedAbis: string[] } };
+  ModelDetail: {
+    model: { id: string; name: string; sizeGB: number; supportedAbis: string[] };
+    device: { totalRamGB: number; freeStorageGB: number; supportedAbis: string[] };
+  };
   MemorySettings: undefined;
   DownloadsManager: undefined;
   ActiveAssistant: undefined;
@@ -68,13 +75,14 @@ function MainStack() {
 
 function DrawerContent(props: any) {
   const { navigation, state } = props;
-  const go = (route: keyof RootStackParamList) => () => navigation.navigate('App', { screen: route });
+  const go = (route: keyof RootStackParamList) => () =>
+    navigation.navigate('App', { screen: route });
 
   const getCurrentRoute = (): string => {
     try {
       let r = state.routes[state.index];
       // Dive into nested navigator states to find active route name
-      // eslint-disable-next-line no-constant-condition
+
       while (r?.state && (r.state as any).routes) {
         const s: any = r.state;
         r = s.routes[s.index];

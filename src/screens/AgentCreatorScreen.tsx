@@ -46,7 +46,6 @@ export default function AgentCreatorScreen() {
           .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         setAssistants(items);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.log('Failed to load assistants', e);
       }
     };
@@ -64,7 +63,9 @@ export default function AgentCreatorScreen() {
       Alert.alert('Missing info', 'Please provide both Name and Role.');
       return;
     }
-    const nameExists = assistants.some(a => (a.name || '').trim().toLowerCase() === trimmedName.toLowerCase());
+    const nameExists = assistants.some(
+      (a) => (a.name || '').trim().toLowerCase() === trimmedName.toLowerCase(),
+    );
     if (nameExists) {
       Alert.alert('Duplicate name', 'An assistant with this name already exists.');
       return;
@@ -88,7 +89,6 @@ export default function AgentCreatorScreen() {
       setInstructions('');
       Alert.alert('Saved', 'Assistant saved successfully.');
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.log('Save error', e);
       Alert.alert('Error', 'Failed to save assistant.');
     } finally {
@@ -100,11 +100,11 @@ export default function AgentCreatorScreen() {
     <SafeAreaView style={styles.container}>
       <HeaderBar title="Agent Creator" />
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.flex1}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
       >
-        <View style={{ flex: 1 }}>
+        <View style={styles.flex1}>
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
             <Text style={styles.title}>Create Your Agent</Text>
 
@@ -169,7 +169,6 @@ export default function AgentCreatorScreen() {
                             await saveMemory('assistant:selected', a.id);
                             Alert.alert('Loaded', `${a.name || 'Assistant'} is now active.`);
                           } catch (e) {
-                            // eslint-disable-next-line no-console
                             console.log('Load error', e);
                             Alert.alert('Error', 'Failed to load assistant.');
                           }
@@ -185,10 +184,9 @@ export default function AgentCreatorScreen() {
                         onPress={async () => {
                           try {
                             await deleteMemory(`assistant:${a.id}`);
-                            setAssistants(prev => prev.filter(x => x.id !== a.id));
+                            setAssistants((prev) => prev.filter((x) => x.id !== a.id));
                             Alert.alert('Deleted', `${a.name || 'Assistant'} removed.`);
                           } catch (e) {
-                            // eslint-disable-next-line no-console
                             console.log('Delete error', e);
                             Alert.alert('Error', 'Failed to delete assistant.');
                           }
@@ -225,11 +223,24 @@ export default function AgentCreatorScreen() {
 }
 
 const styles = StyleSheet.create({
+  flex1: { flex: 1 },
   container: { flex: 1, backgroundColor: Colors.background },
   content: { padding: 16, paddingBottom: 32 },
-  title: { color: Colors.primary, fontSize: 22, fontWeight: '800', marginBottom: 12, textAlign: 'center' },
+  title: {
+    color: Colors.primary,
+    fontSize: 22,
+    fontWeight: '800',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
   label: { color: Colors.textPrimary, marginBottom: 6, marginTop: 6, fontWeight: '600' },
-  card: { backgroundColor: Colors.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: Colors.divider },
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.divider,
+  },
   input: {
     backgroundColor: Colors.divider,
     color: Colors.textPrimary,
@@ -276,6 +287,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.divider,
   },
-  cta: { backgroundColor: Colors.primary, borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
+  cta: {
+    backgroundColor: Colors.primary,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
   ctaText: { color: Colors.background, fontWeight: '800' },
 });

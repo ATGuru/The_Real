@@ -67,6 +67,9 @@ export default function AppSettingsScreen() {
   const [theme, setTheme] = useState<AppSettings['theme']>('dark');
   const [apiKey, setApiKey] = useState<string>('');
   const [modelPath, setModelPath] = useState<string>('');
+  const [miniDexBaseUrl, setMiniDexBaseUrl] = useState<string>('');
+  const [miniDexToken, setMiniDexToken] = useState<string>('');
+  const [preferMiniDex, setPreferMiniDex] = useState<boolean>(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -76,6 +79,9 @@ export default function AppSettingsScreen() {
         setTheme(s.theme || 'dark');
         setApiKey(s.apiFallbackKey || '');
         setModelPath(s.modelPath || '');
+        setMiniDexBaseUrl((s as any).miniDexBaseUrl || '');
+        setMiniDexToken((s as any).miniDexToken || '');
+        setPreferMiniDex(!!(s as any).preferMiniDex);
       } catch (e) {
         console.log('Load app settings error', e);
         Alert.alert('Error', 'Failed to load app settings.');
@@ -97,6 +103,9 @@ export default function AppSettingsScreen() {
         theme,
         apiFallbackKey: apiKey,
         modelPath: modelPath.trim() || undefined,
+        miniDexBaseUrl: miniDexBaseUrl.trim() || undefined,
+        miniDexToken: miniDexToken.trim() || undefined,
+        preferMiniDex,
       };
       await saveAppSettings(settings);
       Alert.alert('Saved', 'App settings updated.');
@@ -141,6 +150,46 @@ export default function AppSettingsScreen() {
           onChangeText={setModelPath}
           accessibilityLabel="Local model path"
         />
+
+        <Text style={styles.labelMargin}>MiniDex Base URL</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="e.g., http://10.0.2.2:3000 (Android emulator)"
+          placeholderTextColor={Colors.placeholder}
+          value={miniDexBaseUrl}
+          onChangeText={setMiniDexBaseUrl}
+          accessibilityLabel="MiniDex base URL"
+          autoCapitalize="none"
+        />
+
+        <Text style={styles.labelMargin}>MiniDex API Token (optional)</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Paste ADMIN_TOKEN if enabled"
+          placeholderTextColor={Colors.placeholder}
+          value={miniDexToken}
+          onChangeText={setMiniDexToken}
+          accessibilityLabel="MiniDex API token"
+          secureTextEntry
+        />
+
+        <Text style={styles.labelMargin}>Prefer MiniDex Backend</Text>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.pill, preferMiniDex ? styles.pillActive : styles.pillIdle]}
+            onPress={() => setPreferMiniDex(true)}
+            accessibilityLabel="Prefer MiniDex ON"
+          >
+            <Text style={styles.pillText}>ON</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.pill, !preferMiniDex ? styles.pillActive : styles.pillIdle]}
+            onPress={() => setPreferMiniDex(false)}
+            accessibilityLabel="Prefer MiniDex OFF"
+          >
+            <Text style={styles.pillText}>OFF</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity

@@ -14,8 +14,9 @@ export default function HeaderBar({ title, subtitle }: { title?: string; subtitl
     <View style={styles.container}>
       <TouchableOpacity accessibilityLabel="Open menu" onPress={openMenu} style={styles.menuBtn}>
         <View style={styles.bar} />
-        <View style={[styles.bar, { width: 18 }]} />
+        <View style={styles.menuIcon} />
         <View style={[styles.bar, { width: 22 }]} />
+        <View style={styles.settingsIcon} />
       </TouchableOpacity>
       <View style={styles.center}>
         {!!title && <Text style={styles.title}>{title}</Text>}
@@ -27,6 +28,8 @@ export default function HeaderBar({ title, subtitle }: { title?: string; subtitl
 }
 
 const styles = StyleSheet.create({
+  menuIcon: { width: 18 },
+  settingsIcon: { width: 22 },
   container: {
     paddingTop: 10,
     paddingBottom: 8,
@@ -43,5 +46,7 @@ const styles = StyleSheet.create({
   title: { color: Colors.primary, fontWeight: '800' },
   subtitle: { color: Colors.placeholder, marginTop: 2 },
   rightSpacer: { width: 24 },
+  icon: {
+    width: 22,
+  },
 });
-
